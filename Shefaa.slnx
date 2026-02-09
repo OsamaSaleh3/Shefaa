@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Shefaa.Api/Shefaa.Api.csproj" />
+  <Project Path="Shefaa.Application/Shefaa.Application.csproj" />
+  <Project Path="Shefaa.Contracts/Shefaa.Contracts.csproj" />
+  <Project Path="Shefaa.Domain/Shefaa.Domain.csproj" />
+  <Project Path="Shefaa.Infrastructure/Shefaa.Infrastructure.csproj" />
+</Solution>
