@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Shefaa.Domain.Identity;
+using Shefaa.Domain.Users;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shefaa.Domain.Users
+namespace Shefaa.Infrastructure.Configurations
 {
     public class UserConfigurations : IEntityTypeConfiguration<AspNetUser>
     {

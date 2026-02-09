@@ -16,4 +16,3 @@ namespace Shefaa.Domain.Prescriptions
             description: "A prescription must contain at least one medication before it can be finalized.");
     }
 }
-}

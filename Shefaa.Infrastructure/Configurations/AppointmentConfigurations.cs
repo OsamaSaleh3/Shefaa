@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shefaa.Domain.Appointments;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace Shefaa.Domain.Appointments
+namespace Shefaa.Infrastructure.Configurations
 {
     public class AppointmentConfigurations : IEntityTypeConfiguration<Appointment>
     {
@@ -18,10 +19,9 @@ namespace Shefaa.Domain.Appointments
                 builder.Property(e => e.DoctorId).HasMaxLength(128);
                 builder.Property(e => e.DurationMinutes).HasDefaultValue(30);
             builder.Property(e => e.Status)
+                    .HasConversion<string>()
                     .HasMaxLength(20)
                     .HasDefaultValue("Scheduled");
-
-            builder.Property(e=>e.Status).HasConversion<string>();
 
             builder.HasOne(d => d.Doctor).WithMany(p => p.Appointments)
                     .HasForeignKey(d => d.DoctorId)

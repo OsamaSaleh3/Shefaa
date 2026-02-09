@@ -69,7 +69,7 @@ public partial class Appointment:BaseEntity
         }
         if (newDate < DateTime.Now)
         {
-
+            return AppointmentErrors.InvalidRescheduleDate;
         }
         AppointmentDate = newDate;
         Status = AppointmentStatus.Rescheduled;

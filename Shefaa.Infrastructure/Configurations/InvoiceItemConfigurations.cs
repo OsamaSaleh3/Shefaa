@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shefaa.Domain.InvoiceItems;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shefaa.Domain.InvoiceItems
+namespace Shefaa.Infrastructure.Configurations
 {
     public class InvoiceItemConfigurations : IEntityTypeConfiguration<InvoiceItem>
     {

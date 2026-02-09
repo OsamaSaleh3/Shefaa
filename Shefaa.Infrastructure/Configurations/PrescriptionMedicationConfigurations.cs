@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shefaa.Domain.PrescriptionMedications;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shefaa.Domain.PrescriptionMedications
+namespace Shefaa.Infrastructure.Configurations
 {
     public class PrescriptionMedicationConfigurations : IEntityTypeConfiguration<PrescriptionMedication>
     {

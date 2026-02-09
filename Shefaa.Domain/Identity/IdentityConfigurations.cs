@@ -16,7 +16,7 @@ namespace Shefaa.Domain.Identity
     {
         public void Configure(EntityTypeBuilder<AspNetRole> builder)
         {
-            builder.HasKey(e => e.Id).HasName("PK__AspNetRo__3214EC079DD135E2");
+            builder.HasKey(e => e.Id);
             builder.Property(e => e.Id).HasMaxLength(128);
             builder.Property(e => e.Name).HasMaxLength(256);
             builder.Property(e => e.NormalizedName).HasMaxLength(256);

@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore; // ضروري لـ UseSqlServer
-using Microsoft.Extensions.Configuration; // ضروري لـ IConfiguration
+﻿using Microsoft.EntityFrameworkCore; 
+using Microsoft.Extensions.Configuration; 
 using Microsoft.Extensions.DependencyInjection;
-using Shefaa.Infrastructure.Common.Persistence; // ضروري لـ IServiceCollection
+using Shefaa.Infrastructure.Common.Persistence;
 
 namespace Shefaa.Infrastructure
 {

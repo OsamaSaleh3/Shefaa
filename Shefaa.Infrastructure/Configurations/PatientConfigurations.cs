@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shefaa.Domain.Patients;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shefaa.Domain.Patients
+namespace Shefaa.Infrastructure.Configurations
 {
     public class PatientConfigurations : IEntityTypeConfiguration<Patient>
     {

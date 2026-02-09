@@ -19,5 +19,9 @@ namespace Shefaa.Domain.Appointments
         public static readonly Error DateNotChanged = Error.Validation(
             code: "Appointment.DateNotChanged",
             description: "The new appointment date must be different from the current date.");
+
+        public static readonly Error InvalidRescheduleDate = Error.Validation(
+            code: "Appointment.InvalidRescheduleDate",
+            description: "Cannot reschedule appointment to a date in the past.");
     }
 }
