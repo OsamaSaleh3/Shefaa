@@ -1,4 +1,5 @@
-﻿using Shefaa.Domain.InvoiceItems;
+﻿using ErrorOr;
+using Shefaa.Domain.InvoiceItems;
 using Shefaa.Domain.Invoices.enums;
 using Shefaa.Domain.Patients;
 using System;
@@ -42,22 +43,26 @@ public partial class Invoice: BaseEntity
 
     }
 
-    public void RecordPayment(decimal amount, PaymentMethod method)
+    public ErrorOr<Success> RecordPayment(decimal amount, PaymentMethod method)
     {
+        if (Status == InvoiceStatus.Cancelled)
+            return InvoiceErrors.CancelledInvoicePayment;
+
+        if (Status == InvoiceStatus.Paid)
+            return InvoiceErrors.AlreadyPaid;
+
         if (amount <= 0)
-        {
+            return InvoiceErrors.InvalidPaymentAmount;
 
-        }
         if (amount > RemainingAmount)
-        {
-
-        }
+            return InvoiceErrors.PaymentExceedsRemaining;
 
         PaidAmount += amount;
         PaymentMethod = method;
 
         UpdateStatus();
         MarkAsUpdated();
+        return Result.Success;
     }
 
     private void UpdateStatus()

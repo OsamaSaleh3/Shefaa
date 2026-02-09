@@ -1,4 +1,5 @@
-﻿using Shefaa.Domain.Appointments;
+﻿using ErrorOr;
+using Shefaa.Domain.Appointments;
 using Shefaa.Domain.Invoices;
 using Shefaa.Domain.MedicalRecords;
 using Shefaa.Domain.Patients.enums;
@@ -45,19 +46,12 @@ public partial class Patient: BaseEntity
                    
     public virtual List<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 
-    public Patient(string fileNumber,string FrstName,string lastName,DateOnly dob,Gender gender,string phone,string address,string emergencyContactName, string emergencyContactPhone)
+    private Patient(string fileNumber,string firstName,string lastName,DateOnly dob,Gender gender,string phone,string address,string emergencyContactName, string emergencyContactPhone)
     {
 
-        if (string.IsNullOrWhiteSpace(fileNumber))
-        {
-
-        }
-        if (dob > DateOnly.FromDateTime(DateTime.Now))
-        {
-
-        }
+       
             FileNumber = fileNumber;
-        FirstName = FrstName;
+        FirstName = firstName;
         LastName = lastName;
         DateOfBirth = dob;
         Gender = gender;
@@ -67,20 +61,43 @@ public partial class Patient: BaseEntity
         EmergencyContactPhone=emergencyContactPhone;
     }
 
-    public void UpdateContactInfo(string phone,string address, string? email)
+    public ErrorOr<Patient> Create(string fileNumber, string firstName, string lastName, DateOnly dob, Gender gender, string phone, string address, string emergencyContactName, string emergencyContactPhone)
     {
+        if (string.IsNullOrWhiteSpace(fileNumber))
+            return PatientErrors.EmptyFileNumber;
+
+        if (dob > DateOnly.FromDateTime(DateTime.Now))
+            return PatientErrors.FutureDateOfBirth;
+
+        if (string.IsNullOrWhiteSpace(phone) || string.IsNullOrWhiteSpace(address))
+            return PatientErrors.InvalidContactInfo;
+
+        if (string.IsNullOrWhiteSpace(emergencyContactName) || string.IsNullOrWhiteSpace(emergencyContactPhone))
+            return PatientErrors.InvalidEmergencyContact;
+
+        return new Patient(fileNumber, firstName, lastName, dob, gender, phone, address, emergencyContactName, emergencyContactPhone);
+    }
+
+    public ErrorOr<Success>UpdateContactInfo(string phone,string address, string? email)
+    {
+        if (string.IsNullOrWhiteSpace(phone) || string.IsNullOrWhiteSpace(address))
+            return PatientErrors.InvalidContactInfo;
         Phone = phone;
         Address = address;
         Email = email;
         MarkAsUpdated();
+        return Result.Success;
 
     }
 
-    public void UpdateEmergencyContact(string name,string phone)
+    public ErrorOr<Success> UpdateEmergencyContact(string name,string phone)
     {
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone))
+            return PatientErrors.InvalidEmergencyContact;
         EmergencyContactName = name;
         EmergencyContactPhone = phone;
         MarkAsUpdated();
+        return Result.Success;
     }
 
     public int GetAge()

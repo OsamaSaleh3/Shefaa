@@ -1,4 +1,5 @@
-﻿using Shefaa.Domain.Prescriptions;
+﻿using ErrorOr;
+using Shefaa.Domain.Prescriptions;
 using System;
 using System.Collections.Generic;
 
@@ -20,28 +21,8 @@ public partial class PrescriptionMedication: BaseEntity
 
     public virtual Prescription Prescription { get; private set; } = null!;
 
-    public PrescriptionMedication(string medicationName, string dosage, string frequency, string duration,string? instructions = null)
+    private PrescriptionMedication(string medicationName, string dosage, string frequency, string duration,string? instructions = null)
     {
-        if (string.IsNullOrWhiteSpace(medicationName))
-        {
-
-        }
-
-        if (string.IsNullOrWhiteSpace(dosage))
-        {
-
-        }
-
-        if (string.IsNullOrWhiteSpace(frequency))
-        {
-
-        }
-
-        if (string.IsNullOrWhiteSpace(duration))
-        {
-
-        }
-
         MedicationName = medicationName;
         Dosage = dosage;
         Frequency = frequency;
@@ -49,12 +30,41 @@ public partial class PrescriptionMedication: BaseEntity
         Instructions = instructions;
     }
 
-    public void UpdateDosage(string newDosage, string? reason)
+    public static ErrorOr<PrescriptionMedication>Create(string medicationName, string dosage, string frequency, string duration, string? instructions = null)
     {
-        if (string.IsNullOrWhiteSpace(newDosage)) throw new ArgumentException("the new dosage invalid");
+        if (string.IsNullOrWhiteSpace(medicationName))
+        {
+            return PrescriptionMedicationErrors.EmptyMedicationName;
+        }
+
+        if (string.IsNullOrWhiteSpace(dosage))
+        {
+            return PrescriptionMedicationErrors.InvalidDosage;
+        }
+
+        if (string.IsNullOrWhiteSpace(frequency))
+        {
+            return PrescriptionMedicationErrors.InvalidFrequency;
+        }
+
+        if (string.IsNullOrWhiteSpace(duration))
+        {
+            return PrescriptionMedicationErrors.InvalidDuration;
+        }
+
+        return new PrescriptionMedication(medicationName, dosage, frequency, duration, instructions);
+    }
+
+    public ErrorOr<Success> UpdateDosage(string newDosage, string? reason)
+    {
+        if (string.IsNullOrWhiteSpace(newDosage))
+        {
+            return PrescriptionMedicationErrors.InvalidDosage;
+        }
 
         Dosage = newDosage;
         Instructions += $" [the Dosage updated for these reason : {reason}]";
         MarkAsUpdated();
+        return Result.Success;
     }
 }

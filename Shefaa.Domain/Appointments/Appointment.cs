@@ -1,4 +1,5 @@
-﻿using Shefaa.Domain.Appointments.enums;
+﻿using ErrorOr;
+using Shefaa.Domain.Appointments.enums;
 using Shefaa.Domain.MedicalRecords;
 using Shefaa.Domain.Patients;
 using Shefaa.Domain.Users;
@@ -37,32 +38,34 @@ public partial class Appointment:BaseEntity
         Status = AppointmentStatus.Scheduled;
     }
 
-    public void Complete()
+    public ErrorOr<Success> Complete()
     {
         if(Status== AppointmentStatus.Cancelled)
         {
-            
+            return AppointmentErrors.AlreadyCancelled;
         }
         Status = AppointmentStatus.Completed;
         MarkAsUpdated();
+        return Result.Success;
     }
 
-    public void Cancel(string reason)
+    public ErrorOr<Success> Cancel(string reason)
     {
         if(Status== AppointmentStatus.Cancelled)
         {
-
+            return AppointmentErrors.AlreadyCancelled;
         }
         Notes = $"Cancelation reason : {reason}";
         Status = AppointmentStatus.Cancelled;
         MarkAsUpdated();
+        return Result.Success;
     }
 
-    public void Reschedule(DateTime newDate)
+    public ErrorOr<Success> Reschedule(DateTime newDate)
     {
         if (Status== AppointmentStatus.Cancelled)
         {
-
+            return AppointmentErrors.AlreadyCancelled;
         }
         if (newDate < DateTime.Now)
         {
@@ -71,6 +74,7 @@ public partial class Appointment:BaseEntity
         AppointmentDate = newDate;
         Status = AppointmentStatus.Rescheduled;
         MarkAsUpdated();
+        return Result.Success;
     }
 
 

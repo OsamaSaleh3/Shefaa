@@ -1,4 +1,5 @@
-﻿using Shefaa.Domain.Appointments;
+﻿using ErrorOr;
+using Shefaa.Domain.Appointments;
 using Shefaa.Domain.Patients;
 using Shefaa.Domain.Prescriptions;
 using Shefaa.Domain.Users;
@@ -47,14 +48,6 @@ public partial class MedicalRecord: BaseEntity
 
     public MedicalRecord(int patientId,string doctorId,string chiefComplaint, string symptoms, string diagnosis, int? appointmentId = null)
     {
-        if (string.IsNullOrWhiteSpace(chiefComplaint))
-        {
-
-        }
-        if (string.IsNullOrWhiteSpace(diagnosis))
-        {
-
-        }
 
 
         PatientId = patientId;
@@ -78,11 +71,25 @@ public partial class MedicalRecord: BaseEntity
         MarkAsUpdated();
     }
 
-    public void UpdateDiagnosis(string newDiagnosis,string? additionalNotes)
+    public ErrorOr<MedicalRecord>Create(int patientId, string doctorId, string chiefComplaint, string symptoms, string diagnosis, int? appointmentId = null)
+    {
+        if (string.IsNullOrWhiteSpace(chiefComplaint))
+        {
+            return MedicalRecordErrors.EmptyComplaint;
+        }
+
+        if (string.IsNullOrWhiteSpace(diagnosis))
+        {
+            return MedicalRecordErrors.EmptyDiagnosis;
+        }
+
+        return new MedicalRecord(patientId, doctorId, chiefComplaint, symptoms, diagnosis, appointmentId);
+    }
+    public ErrorOr<Success> UpdateDiagnosis(string newDiagnosis,string? additionalNotes)
     {
         if (string.IsNullOrWhiteSpace(newDiagnosis))
         {
-
+            return MedicalRecordErrors.EmptyDiagnosis;
         }
         Diagnosis = newDiagnosis;
 
@@ -90,6 +97,8 @@ public partial class MedicalRecord: BaseEntity
         {
             DoctorNotes= $"\n[Updated at {DateTime.Now}]: {additionalNotes}";
         }
+        MarkAsUpdated();
+        return Result.Success;
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using Shefaa.Domain.MedicalRecords;
+﻿using ErrorOr;
+using Shefaa.Domain.MedicalRecords;
 using Shefaa.Domain.Patients;
 using Shefaa.Domain.PrescriptionMedications;
 using Shefaa.Domain.Users;
@@ -37,13 +38,21 @@ public partial class Prescription: BaseEntity
         Notes = notes;
     }
 
-    public void AddMedication(string medicationName,string dosage,string frequency,string duration,string? instructions=null )
+    public ErrorOr<Success> AddMedication(string medicationName,string dosage,string frequency,string duration,string? instructions=null )
     {
         if (PrescriptionMedications.Any(m => m.MedicationName.Equals(medicationName, StringComparison.OrdinalIgnoreCase)))
-            throw new Exception("this medication is already in the list");
+        {
+            return PrescriptionErrors.DuplicateMedication;
+        }
 
-        var medication = new PrescriptionMedication(medicationName, dosage, frequency, duration, instructions);
-        PrescriptionMedications.Add(medication);
+
+        var medicationResult = PrescriptionMedication.Create(medicationName, dosage, frequency, duration, instructions);
+        if (medicationResult.IsError)
+        {
+            return medicationResult.Errors;
+        }
+        PrescriptionMedications.Add(medicationResult.Value);
         MarkAsUpdated();
+        return Result.Success;
     }
 }
