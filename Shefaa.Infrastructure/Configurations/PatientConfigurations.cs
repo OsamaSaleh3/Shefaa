@@ -11,24 +11,45 @@ namespace Shefaa.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Patient> builder)
         {
-            builder.HasKey(e => e.Id).HasName("PK__Patients__3214EC07F7A2956C");
+            builder.HasKey(e => e.Id);
 
-            builder.HasIndex(e => e.FileNumber, "UQ__Patients__8BD00B71E6FD016F").IsUnique();
+            builder.HasIndex(e => e.FileNumber).IsUnique();
 
-            builder.Property(e=>e.Gender).HasConversion<string>();
-
-            builder.Property(e => e.Address).HasMaxLength(255);
-            builder.Property(e => e.BloodType).HasMaxLength(5);
-            builder.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            builder.Property(e => e.FileNumber).HasMaxLength(20).IsRequired();
+            builder.Property(e => e.FirstName).HasMaxLength(50).IsRequired();
+            builder.Property(e => e.LastName).HasMaxLength(50).IsRequired();
+            builder.Property(e => e.Phone).HasMaxLength(20).IsRequired();
             builder.Property(e => e.Email).HasMaxLength(100);
-            builder.Property(e => e.EmergencyContactName).HasMaxLength(100);
-            builder.Property(e => e.EmergencyContactPhone).HasMaxLength(20);
-            builder.Property(e => e.FileNumber).HasMaxLength(20);
-            builder.Property(e => e.FirstName).HasMaxLength(50);
-            builder.Property(e => e.Gender).HasMaxLength(10);
+            builder.Property(e => e.Address).HasMaxLength(255).IsRequired();
+            builder.Property(e => e.BloodType).HasMaxLength(5);
+            builder.Property(e => e.EmergencyContactName).HasMaxLength(100).IsRequired();
+            builder.Property(e => e.EmergencyContactPhone).HasMaxLength(20).IsRequired();
+            builder.Property(e => e.GeneralNotes).HasMaxLength(500);
+
+            builder.Property(e => e.Gender).HasConversion<string>().HasMaxLength(10).IsRequired();
+            builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
+            builder.Property(e => e.DeletedAt);
             builder.Property(e => e.IsDeleted).HasDefaultValue(false);
-            builder.Property(e => e.LastName).HasMaxLength(50);
-            builder.Property(e => e.Phone).HasMaxLength(20);
+
+            builder.HasMany(p => p.Appointments)
+                .WithOne(a => a.Patient)
+                .HasForeignKey(a => a.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(p => p.Invoices)
+                .WithOne(i => i.Patient)
+                .HasForeignKey(i => i.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(p => p.MedicalRecords)
+                .WithOne(m => m.Patient)
+                .HasForeignKey(m => m.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(p => p.Prescriptions)
+                .WithOne(pr => pr.Patient)
+                .HasForeignKey(pr => pr.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

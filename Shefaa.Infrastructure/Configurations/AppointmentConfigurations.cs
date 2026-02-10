@@ -12,27 +12,36 @@ namespace Shefaa.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Appointment> builder)
         {
-            
-                builder.HasKey(e => e.Id).HasName("PK__Appointm__3214EC07E9F7A69C");
-                
-                builder.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-                builder.Property(e => e.DoctorId).HasMaxLength(128);
-                builder.Property(e => e.DurationMinutes).HasDefaultValue(30);
+            builder.HasKey(e => e.Id);
+
+            builder.Property(e => e.AppointmentDate).IsRequired();
+            builder.Property(e => e.DurationMinutes).HasDefaultValue(30);
             builder.Property(e => e.Status)
-                    .HasConversion<string>()
-                    .HasMaxLength(20)
-                    .HasDefaultValue("Scheduled");
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .HasDefaultValueSql("'Scheduled'");
+            builder.Property(e => e.Notes).HasMaxLength(500);
+            builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
 
-            builder.HasOne(d => d.Doctor).WithMany(p => p.Appointments)
-                    .HasForeignKey(d => d.DoctorId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Appointments_Doctors");
+            builder.Property(e => e.PatientId).IsRequired();
+            builder.Property(e => e.DoctorId).IsRequired();
 
-            builder.HasOne(d => d.Patient).WithMany(p => p.Appointments)
-                    .HasForeignKey(d => d.PatientId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Appointments_Patients");
-           
+            builder.HasOne(a => a.Patient)
+                .WithMany(p => p.Appointments)
+                .HasForeignKey(a => a.PatientId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Appointments_Patients");
+
+            builder.HasOne(a => a.Doctor)
+                .WithMany(u => u.Appointments)
+                .HasForeignKey(a => a.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Appointments_Doctors");
+
+            builder.HasMany(a => a.MedicalRecords)
+                .WithOne(m => m.Appointment)
+                .HasForeignKey(m => m.AppointmentId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

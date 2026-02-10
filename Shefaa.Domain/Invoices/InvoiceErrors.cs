@@ -7,9 +7,13 @@ namespace Shefaa.Domain.Invoices
 {
     public static class InvoiceErrors
     {
+        public static readonly Error InvalidInvoiceNumber = Error.Validation(
+            code: "Invoice.InvalidInvoiceNumber",
+            description: "Invoice number cannot be empty.");
+
         public static readonly Error InvalidPaymentAmount = Error.Validation(
-        code: "Invoice.InvalidPaymentAmount",
-        description: "Payment amount must be greater than zero.");
+            code: "Invoice.InvalidPaymentAmount",
+            description: "Payment amount must be greater than zero.");
 
         public static readonly Error PaymentExceedsRemaining = Error.Validation(
             code: "Invoice.PaymentExceedsRemaining",

@@ -11,26 +11,38 @@ namespace Shefaa.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Prescription> builder)
         {
-            builder.HasKey(e => e.Id).HasName("PK__Prescrip__3214EC07131729EF");
+            builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            builder.Property(e => e.DoctorId).HasMaxLength(128);
-            builder.Property(e => e.PrescriptionDate).HasDefaultValueSql("(getdate())");
+            builder.Property(e => e.PrescriptionDate).HasDefaultValueSql("GETDATE()");
+            builder.Property(e => e.Notes).HasMaxLength(500);
+            builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
 
-            builder.HasOne(d => d.Doctor).WithMany(p => p.Prescriptions)
-                .HasForeignKey(d => d.DoctorId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+            builder.Property(e => e.PatientId).IsRequired();
+            builder.Property(e => e.DoctorId).IsRequired();
+            builder.Property(e => e.MedicalRecordId).IsRequired();
+
+            builder.HasOne(p => p.Patient)
+                .WithMany(pa => pa.Prescriptions)
+                .HasForeignKey(p => p.PatientId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Prescriptions_Patients");
+
+            builder.HasOne(p => p.Doctor)
+                .WithMany(u => u.Prescriptions)
+                .HasForeignKey(p => p.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Prescriptions_Doctors");
 
-            builder.HasOne(d => d.MedicalRecord).WithMany(p => p.Prescriptions)
-                .HasForeignKey(d => d.MedicalRecordId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Prescriptions_Records");
+            builder.HasOne(p => p.MedicalRecord)
+                .WithMany(m => m.Prescriptions)
+                .HasForeignKey(p => p.MedicalRecordId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Prescriptions_MedicalRecords");
 
-            builder.HasOne(d => d.Patient).WithMany(p => p.Prescriptions)
-                .HasForeignKey(d => d.PatientId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Prescriptions_Patients");
+            builder.HasMany(p => p.PrescriptionMedications)
+                .WithOne(pm => pm.Prescription)
+                .HasForeignKey(pm => pm.PrescriptionId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

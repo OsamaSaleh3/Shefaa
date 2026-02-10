@@ -11,35 +11,41 @@ namespace Shefaa.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Invoice> builder)
         {
-            builder.HasKey(e => e.Id).HasName("PK__Invoices__3214EC0757017808");
+            builder.HasKey(e => e.Id);
 
-            builder.HasIndex(e => e.InvoiceNumber, "UQ__Invoices__D776E9812744C552").IsUnique();
+            builder.HasIndex(e => e.InvoiceNumber).IsUnique();
 
-            builder.Property(e => e.Status).HasConversion<string>();
-            builder.Property(e => e.PaymentMethod).HasConversion<string>();
-
-
-            builder.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            builder.Property(e => e.InvoiceDate).HasDefaultValueSql("(getdate())");
-            builder.Property(e => e.InvoiceNumber).HasMaxLength(20);
-            builder.Property(e => e.PaidAmount)
-                .HasDefaultValue(0m)
-                .HasColumnType("decimal(18, 2)");
-            builder.Property(e => e.PaymentMethod).HasMaxLength(50);
-            builder.Property(e => e.RemainingAmount)
-                .HasComputedColumnSql("([TotalAmount]-[PaidAmount])", false)
-                .HasColumnType("decimal(19, 2)");
+            builder.Property(e => e.InvoiceNumber).HasMaxLength(20).IsRequired();
+            builder.Property(e => e.InvoiceDate).HasDefaultValueSql("GETDATE()");
             builder.Property(e => e.Status)
+                .HasConversion<string>()
                 .HasMaxLength(20)
-                .HasDefaultValue("Unpaid");
+                .HasDefaultValueSql("'Unpaid'");
+            builder.Property(e => e.PaymentMethod).HasConversion<string>().HasMaxLength(50);
             builder.Property(e => e.TotalAmount)
-                .HasDefaultValue(0m)
-                .HasColumnType("decimal(18, 2)");
+                .HasColumnType("decimal(18, 2)")
+                .HasDefaultValue(0m);
+            builder.Property(e => e.PaidAmount)
+                .HasColumnType("decimal(18, 2)")
+                .HasDefaultValue(0m);
+            builder.Property(e => e.RemainingAmount)
+                .HasColumnType("decimal(18, 2)")
+                .HasComputedColumnSql("[TotalAmount] - [PaidAmount]", stored: true);
+            builder.Property(e => e.Notes).HasMaxLength(500);
+            builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
 
-            builder.HasOne(d => d.Patient).WithMany(p => p.Invoices)
-                .HasForeignKey(d => d.PatientId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+            builder.Property(e => e.PatientId).IsRequired();
+
+            builder.HasOne(i => i.Patient)
+                .WithMany(p => p.Invoices)
+                .HasForeignKey(i => i.PatientId)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Invoices_Patients");
+
+            builder.HasMany(i => i.InvoiceItems)
+                .WithOne(ii => ii.Invoice)
+                .HasForeignKey(ii => ii.InvoiceId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

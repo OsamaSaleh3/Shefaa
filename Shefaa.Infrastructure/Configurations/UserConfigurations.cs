@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shefaa.Domain.Identity;
 using Shefaa.Domain.Users;
 using System;
 using System.Collections.Generic;
@@ -8,36 +7,31 @@ using System.Text;
 
 namespace Shefaa.Infrastructure.Configurations
 {
-    public class UserConfigurations : IEntityTypeConfiguration<AspNetUser>
+    public class UserConfigurations : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<AspNetUser> builder)
+        public void Configure(EntityTypeBuilder<User> builder)
         {
+            builder.Property(u => u.FirstName).HasMaxLength(50).IsRequired();
+            builder.Property(u => u.LastName).HasMaxLength(50).IsRequired();
+            builder.Property(u => u.Specialization).HasMaxLength(100);
+            builder.Property(u => u.IsActive).HasDefaultValue(true);
+            builder.Property(u => u.CreatedAt).HasDefaultValueSql("GETDATE()");
+            builder.Property(u => u.IsDeleted).HasDefaultValue(false);
 
-            builder.HasKey(e => e.Id).HasName("PK__AspNetUs__3214EC0724209140");
+            builder.HasMany(u => u.Appointments)
+                .WithOne(a => a.Doctor)
+                .HasForeignKey(a => a.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(e => e.Id).HasMaxLength(128);
-            builder.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            builder.Property(e => e.Email).HasMaxLength(256);
-            builder.Property(e => e.FirstName).HasMaxLength(50).HasDefaultValue("");
-            builder.Property(e => e.LastName).HasMaxLength(50).HasDefaultValue("");
-            builder.Property(e => e.IsActive).HasDefaultValue(true);
-            builder.Property(e => e.NormalizedEmail).HasMaxLength(256);
-            builder.Property(e => e.NormalizedUserName).HasMaxLength(256);
-            builder.Property(e => e.Specialization).HasMaxLength(100);
-            builder.Property(e => e.UserName).HasMaxLength(256);
+            builder.HasMany(u => u.MedicalRecords)
+                .WithOne(m => m.Doctor)
+                .HasForeignKey(m => m.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany(d => d.Roles).WithMany(p => p.Users)
-                .UsingEntity<Dictionary<string, object>>(
-                    "AspNetUserRole",
-                    r => r.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
-                    l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
-                    j =>
-                    {
-                        j.HasKey("UserId", "RoleId");
-                        j.ToTable("AspNetUserRoles");
-                        j.IndexerProperty<string>("UserId").HasMaxLength(128);
-                        j.IndexerProperty<string>("RoleId").HasMaxLength(128);
-                    });
+            builder.HasMany(u => u.Prescriptions)
+                .WithOne(p => p.Doctor)
+                .HasForeignKey(p => p.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -11,17 +11,24 @@ namespace Shefaa.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<InvoiceItem> builder)
         {
-            builder.HasKey(e => e.Id).HasName("PK__InvoiceI__3214EC07ECF9E8A2");
+            builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.Description).HasMaxLength(255);
+            builder.Property(e => e.Description).HasMaxLength(500).IsRequired();
             builder.Property(e => e.Quantity).HasDefaultValue(1);
+            builder.Property(e => e.UnitPrice)
+                .HasColumnType("decimal(18, 2)")
+                .IsRequired();
             builder.Property(e => e.TotalPrice)
-                .HasComputedColumnSql("([Quantity]*[UnitPrice])", false)
-                .HasColumnType("decimal(29, 2)");
-            builder.Property(e => e.UnitPrice).HasColumnType("decimal(18, 2)");
+                .HasColumnType("decimal(18, 2)")
+                .HasComputedColumnSql("[Quantity] * [UnitPrice]", stored: true);
+            builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
 
-            builder.HasOne(d => d.Invoice).WithMany(p => p.InvoiceItems)
-                .HasForeignKey(d => d.InvoiceId)
+            builder.Property(e => e.InvoiceId).IsRequired();
+
+            builder.HasOne(ii => ii.Invoice)
+                .WithMany(i => i.InvoiceItems)
+                .HasForeignKey(ii => ii.InvoiceId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_InvoiceItems_Invoices");
         }
     }

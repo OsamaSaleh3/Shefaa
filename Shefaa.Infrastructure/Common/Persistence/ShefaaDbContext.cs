@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Shefaa.Domain.Appointments;
-using Shefaa.Domain.Identity;
 using Shefaa.Domain.InvoiceItems;
 using Shefaa.Domain.Invoices;
 using Shefaa.Domain.MedicalRecords;
@@ -12,7 +11,7 @@ using Shefaa.Domain.Users;
 
 namespace Shefaa.Infrastructure.Common.Persistence;
 
-public partial class ShefaaDbContext : IdentityDbContext
+public partial class ShefaaDbContext : IdentityDbContext<User>
 {
     public ShefaaDbContext()
     {
@@ -23,19 +22,15 @@ public partial class ShefaaDbContext : IdentityDbContext
     {
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer("Server=OSAMA-ALMAHSERE;Database=Shefaa;Trusted_Connection=True;TrustServerCertificate=True;");
+        }
+    }
+
     public virtual DbSet<Appointment> Appointments { get; set; }
-
-    public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
-
-    public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
-
-    public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
-
-    public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
-
-    public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
-
-    public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
 
     public virtual DbSet<Invoice> Invoices { get; set; }
 

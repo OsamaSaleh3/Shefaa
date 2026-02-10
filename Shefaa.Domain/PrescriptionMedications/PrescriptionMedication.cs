@@ -7,7 +7,7 @@ namespace Shefaa.Domain.PrescriptionMedications;
 
 public partial class PrescriptionMedication: BaseEntity
 {
-    public int PrescriptionId { get; private set; }
+    public Guid PrescriptionId { get; private set; }
 
     public string MedicationName { get; private set; } = null!;
 

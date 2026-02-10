@@ -13,7 +13,7 @@ public partial class Invoice: BaseEntity
 
     public string InvoiceNumber { get; private set; } = null!;
 
-    public int PatientId { get; private set; }
+    public Guid PatientId { get; private set; }
 
     public DateTime? InvoiceDate { get; private set; }
 
@@ -33,14 +33,24 @@ public partial class Invoice: BaseEntity
 
     public virtual Patient Patient { get; private set; } = null!;
 
+    internal Invoice()
+    {
+    }
 
-    public Invoice(string invoiceNumber,int patientId)
+    private Invoice(string invoiceNumber, Guid patientId)
     {
         InvoiceNumber = invoiceNumber;
         PatientId = patientId;
         InvoiceDate = DateTime.Now;
         Status = InvoiceStatus.Unpaid;
+    }
 
+    public static ErrorOr<Invoice> Create(string invoiceNumber, Guid patientId)
+    {
+        if (string.IsNullOrWhiteSpace(invoiceNumber))
+            return InvoiceErrors.InvalidInvoiceNumber;
+
+        return new Invoice(invoiceNumber, patientId);
     }
 
     public ErrorOr<Success> RecordPayment(decimal amount, PaymentMethod method)
