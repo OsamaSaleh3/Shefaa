@@ -13,6 +13,8 @@ public partial class User : IdentityUser
 
     public string? Specialization { get; set; } 
 
+    public UserRole Role { get; set; }
+
     public bool IsActive { get; set; } = true;
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
