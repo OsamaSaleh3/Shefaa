@@ -26,7 +26,9 @@ namespace Shefaa.Infrastructure
                 options.Password.RequiredLength = 6;
             })
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ShefaaDbContext>();
+                .AddEntityFrameworkStores<ShefaaDbContext>()
+                .AddRoleManager<RoleManager<IdentityRole>>()
+                .AddUserManager<UserManager<User>>();
 
             services.AddScoped<IUserRepository, UserRepository>();
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Shefaa.Application;
 using Shefaa.Infrastructure;
+using Shefaa.Infrastructure.Common.Persistence;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,11 +34,14 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidateAudience = true,
         ValidAudience = jwtSettings["Audience"],
-        ValidateLifetime = true
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
     };
 });
 
 var app = builder.Build();
+
+await DbInitializer.InitializeAsync(app.Services);
 
 if (app.Environment.IsDevelopment())
 {
