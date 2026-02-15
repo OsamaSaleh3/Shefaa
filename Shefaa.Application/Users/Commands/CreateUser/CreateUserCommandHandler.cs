@@ -31,6 +31,8 @@ namespace Shefaa.Application.Users.Commands.CreatePatient
                 LastName = request.LastName,
                 Email = request.Email,
                 Role = request.Role,
+                UserName=request.Email
+
             };
 
             var isCreated = await _userRepository.CreateAsync(user, request.Password);

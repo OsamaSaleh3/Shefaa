@@ -6,7 +6,7 @@ namespace Shefaa.Application.Common.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
-    where TResponse : IErrorOr
+    where TResponse : IErrorOr 
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -15,7 +15,10 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         _validators = validators;
     }
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
         if (!_validators.Any())
         {
@@ -28,8 +31,8 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             _validators.Select(v => v.ValidateAsync(context, cancellationToken)));
 
         var failures = validationResults
-            .Where(r => r.Errors.Count > 0)
             .SelectMany(r => r.Errors)
+            .Where(f => f != null)
             .ToList();
 
         if (failures.Count != 0)
@@ -38,8 +41,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
                 .ConvertAll(failure => Error.Validation(
                     code: failure.PropertyName,
                     description: failure.ErrorMessage));
-
-            return (TResponse)Activator.CreateInstance(typeof(TResponse), errors)!;
+            return (TResponse)(dynamic)errors;
         }
 
         return await next();

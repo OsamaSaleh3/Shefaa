@@ -2,7 +2,11 @@ using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shefaa.Application.Users.Commands.CreateUser;
+using Shefaa.Application.Users.Commands.DeleteUser;
 using Shefaa.Application.Users.Commands.Login;
+using Shefaa.Application.Users.Commands.UpdateUser;
+using Shefaa.Application.Users.Queries.GetUserById;
+using Shefaa.Application.Users.Queries.GetUsers;
 using Shefaa.Contracts.Users;
 
 namespace Shefaa.Api.Controllers;
@@ -67,6 +71,71 @@ public class UsersController : ControllerBase
                 ),
                 authDto.Token
             )),
+            errors => Problem(statusCode: GetStatusCode(errors), detail: errors.First().Description)
+        );
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var command = new DeleteUserCommand(id);
+        var result = await _sender.Send(command);
+        return result.Match<IActionResult>(
+            _ => NoContent(),
+            errors => Problem(statusCode: GetStatusCode(errors), detail: errors.First().Description)
+        );
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
+    {
+        var command=new UpdateUserCommand(
+            request.Id,
+            request.FirstName,
+            request.LastName,
+            request.Specialization,
+            request.PhoneNumber
+        );
+
+        var result=await _sender.Send(command); 
+        return result.Match<IActionResult>(
+            _ => NoContent(),
+            errors => Problem(statusCode: GetStatusCode(errors), detail: errors.First().Description)
+        );
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(string id)
+    {
+        var query= new GetUserByIdQuery(id);
+        var result=await _sender.Send(query);
+        return result.Match<IActionResult>(
+            userDto => Ok(new UserResponse(
+                userDto.Id,
+                userDto.FirstName,
+                userDto.LastName,
+                userDto.Email,
+                userDto.Role,
+                userDto.Specialization
+            )),
+            errors => Problem(statusCode: GetStatusCode(errors), detail: errors.First().Description)
+        );
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var query = new GetUsersQuery();
+        var result = await _sender.Send(query);
+        return result.Match<IActionResult>(
+            userDtos => Ok(userDtos.Select(userDto => new UserResponse(
+                userDto.Id,
+                userDto.FirstName,
+                userDto.LastName,
+                userDto.Email,
+                userDto.Role,
+                userDto.Specialization
+            ))),
             errors => Problem(statusCode: GetStatusCode(errors), detail: errors.First().Description)
         );
     }
