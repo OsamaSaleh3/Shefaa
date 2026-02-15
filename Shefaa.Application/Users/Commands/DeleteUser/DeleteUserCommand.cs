@@ -6,6 +6,6 @@ using System.Text;
 
 namespace Shefaa.Application.Users.Commands.DeleteUser
 {
-    public sealed record DeleteUserCommand(string Id) : IRequest<ErrorOr<Deleted>>;
+    public sealed record DeleteUserCommand(string Id) : IRequest<ErrorOr<Success>>;
   
 }

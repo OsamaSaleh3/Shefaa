@@ -31,18 +31,20 @@ namespace Shefaa.Infrastructure.Repositories
             return await _userManager.CheckPasswordAsync(user, password);
         }
 
-        public async Task<bool> CreateAsync(User user, string password)
+        public async Task<(bool IsSuccess, string[] Errors)> CreateAsync(User user, string password)
         {
             var result = await _userManager.CreateAsync(user, password);
-
             if (!result.Succeeded)
             {
-                return false;
+                return (false, result.Errors.Select(e => e.Description).ToArray());
             }
-
-            await _userManager.AddToRoleAsync(user, user.Role.ToString());
-            
-            return true;
+            var roleResult = await _userManager.AddToRoleAsync(user, user.Role.ToString());
+            if (!roleResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(user);
+                return (false, roleResult.Errors.Select(e => e.Description).ToArray());
+            }
+            return (true, Array.Empty<string>());
         }
 
         public async Task DeleteAsync(User user)
@@ -57,7 +59,9 @@ namespace Shefaa.Infrastructure.Repositories
 
         public async Task<List<User>> GetAllAsync()
         {
-            return await _userManager.Users.ToListAsync();
+            return await _userManager.Users
+                .Where(u=>!u.IsDeleted&&u.IsActive)
+                .ToListAsync();
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Shefaa.Application.Users.Commands.DeleteUser
 {
-    public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, ErrorOr<Success>>
+    public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, ErrorOr< Success>>
     {
         private readonly IUserRepository _userRepository;
 
@@ -17,7 +17,7 @@ namespace Shefaa.Application.Users.Commands.DeleteUser
             _userRepository = userRepository;
         }
 
-        public async Task<ErrorOr<Deleted>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Success>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
             if(request.Id is null)
             {
@@ -31,9 +31,9 @@ namespace Shefaa.Application.Users.Commands.DeleteUser
             }
 
             await _userRepository.DeleteAsync(user);
-            
+                
            
-            return Result.Deleted;
+            return Result.Success;
         }
     }
 }

@@ -100,12 +100,28 @@ public partial class Patient: BaseEntity
         return Result.Success;
     }
 
+    public void UpdatePersonalInfo(string firstName, string lastName, DateOnly dateOfBirth, Gender gender)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        DateOfBirth = dateOfBirth;
+        Gender = gender;
+        MarkAsUpdated();
+    }
+
     public int GetAge()
     {
         var today = DateOnly.FromDateTime(DateTime.Now);
         var age = today.Year - DateOfBirth.Year;
         if (DateOfBirth > today.AddYears(-age)) age--;
         return age;
+    }
+
+    public void UpdateMedicalDetails(BloodType? bloodType, string? generalNote)
+    {
+       BloodType = bloodType;
+       GeneralNotes = generalNote;
+       MarkAsUpdated();
     }
 
     public override void SoftDelete()
