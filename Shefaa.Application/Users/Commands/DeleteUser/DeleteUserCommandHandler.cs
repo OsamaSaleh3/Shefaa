@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Shefaa.Application.Users.Commands.DeleteUser
 {
-    public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, ErrorOr<Deleted>>
+    public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, ErrorOr<Success>>
     {
         private readonly IUserRepository _userRepository;
 
