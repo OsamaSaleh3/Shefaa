@@ -21,33 +21,31 @@ namespace Shefaa.Application.Users.Commands.CreatePatient
 
         public async Task<ErrorOr<UserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var result = await _userRepository
-               .CreateUserAsync(
-               request.FirstName,
-               request.LastName,
-               request.Email,
-               request.Password,
-               request.Role,
-               request.Specialization,
-               request.PhoneNumber
-               );
-
-            if (result.IsError)
+            if (await _userRepository.GetByEmailAsync(request.Email) is not null)
             {
-                return result.Errors;
+                return Error.Conflict(description: "Email already exists.");
+            }
+            var user = new User
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Role = request.Role,
+            };
+
+            var isCreated = await _userRepository.CreateAsync(user, request.Password);
+
+            if (!isCreated)
+            {
+                return Error.Failure(description: "Failed to create user.");
             }
 
-            var user = result.Value;
-
-            return new UserDto(
-                user.Id, 
-                user.FirstName,
-                user.LastName,
-                user.Email!,
-                user.Role,
-                user.Specialization
-            );
-
+            return new UserDto (user.Id,
+                                user.FirstName,
+                                user.LastName,
+                                user.Email,
+                                user.Role,
+                                user.Specialization);
         }
     }
 }

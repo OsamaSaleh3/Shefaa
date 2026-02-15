@@ -2,44 +2,48 @@
 using MediatR;
 using Shefaa.Application.Common.Interfaces;
 using Shefaa.Application.Users.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Shefaa.Application.Users.Commands.Login
+namespace Shefaa.Application.Users.Commands.Login;
+
+public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<AuthenticationDto>>
 {
-    public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<AuthenticationDto>>
+    private readonly IUserRepository _userRepository;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
+
+    public LoginCommandHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IJwtTokenGenerator _jwtTokenGenerator;
+        _userRepository = userRepository;
+        _jwtTokenGenerator = jwtTokenGenerator;
+    }
 
-        public LoginCommandHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
+    public async Task<ErrorOr<AuthenticationDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetByEmailAsync(request.email);
+        if (user is null)
         {
-            _userRepository = userRepository;
-            _jwtTokenGenerator = jwtTokenGenerator;
+            return Error.Unauthorized(description: "invalid email or password");
         }
 
-        public async Task<ErrorOr<AuthenticationDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
+        if (!await _userRepository.CheckPasswordAsync(user, request.password))
         {
-            var userResult = await _userRepository.ValidateUserAsync(request.email, request.password);
-            if (userResult.IsError)
-            {
-                return userResult.Errors;
-            }
-
-            var user = userResult.Value;
-
-            var token=_jwtTokenGenerator.GenerateToken(user);
-
-            var userDto=new UserDto
-            (user.Id,
-             user.FirstName,
-             user.LastName,
-             user.Email!,
-             user.Role,
-             user.Specialization);
-
-            return new AuthenticationDto(userDto, token);
+            return Error.Unauthorized(description: "invalid email or password");
         }
+
+        if (!user.IsActive)
+        {
+            return Error.Unauthorized(description: "account is not active");
+        }
+        var token =_jwtTokenGenerator.GenerateToken(user);
+        return new AuthenticationDto(new UserDto
+        (
+            user.Id,
+            user.FirstName,
+            user.LastName,
+            user.Email!,
+            user.Role,
+            user.Specialization?? "no specialization"
+        ),
+        token);
+
     }
 }

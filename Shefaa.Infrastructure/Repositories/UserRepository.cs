@@ -1,102 +1,63 @@
-using ErrorOr;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Shefaa.Application.Common.Interfaces;
 using Shefaa.Domain.Users;
 using Shefaa.Infrastructure.Common.Persistence;
+using System;
+using System.Threading.Tasks;
 
-namespace Shefaa.Infrastructure.Repositories;
-
-public class UserRepository : IUserRepository
+namespace Shefaa.Infrastructure.Repositories
 {
-    private readonly ShefaaDbContext _dbContext;
-    private readonly UserManager<User> _userManager;
-
-    public UserRepository(
-        ShefaaDbContext dbContext,
-        UserManager<User> userManager)
+    public class UserRepository : IUserRepository
     {
-        _dbContext = dbContext;
-        _userManager = userManager;
-    }
-
-    public async Task<ErrorOr<User>> CreateUserAsync(
-        string firstName,
-        string lastName,
-        string email,
-        string password,
-        UserRole role,
-        string? specialization,
-        string? phoneNumber)
-    {
-        try
+        private readonly UserManager<User> _userManager;
+        public UserRepository(UserManager<User> userManager)
         {
-            var existingUser = await _userManager.FindByEmailAsync(email);
-            if (existingUser is not null)
-            {
-                return Error.Conflict(description: $"User with email '{email}' already exists.");
-            }
+            _userManager = userManager;
+        }
 
-            var user = new User
-            {
-                UserName = email,
-                Email = email,
-                FirstName = firstName,
-                LastName = lastName,
-                PhoneNumber = phoneNumber,
-                Role = role,
-                Specialization = specialization,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
-            };
+        public async Task<User?> GetByIdAsync(string id)
+        {
+            return await _userManager.FindByIdAsync(id.ToString());
+        }
 
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<bool> CheckPasswordAsync(User user, string password)
+        {
+            return await _userManager.CheckPasswordAsync(user, password);
+        }
+
+        public async Task<bool> CreateAsync(User user, string password)
+        {
             var result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
             {
-                var errors = result.Errors
-                    .Select(e => Error.Failure(description: e.Description))
-                    .Cast<Error>()
-                    .ToList();
-
-                return errors;
+                return false;
             }
 
-            await _userManager.AddToRoleAsync(user, role.ToString());
-
-            return user;
+            await _userManager.AddToRoleAsync(user, user.Role.ToString());
+            
+            return true;
         }
-        catch (Exception ex)
+
+        public async Task DeleteAsync(User user)
         {
-            return Error.Failure(description: $"An error occurred while creating the user: {ex.Message}");
+            await _userManager.DeleteAsync(user);
         }
-    }
 
-    public async Task<ErrorOr<User>> ValidateUserAsync(string email, string password)
-    {
-        try
+        public async Task UpdateAsync(User user)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user is null)
-            {
-                return Error.Unauthorized(description: "Invalid email or password.");
-            }
-
-            if (!user.IsActive)
-            {
-                return Error.Unauthorized(description: "User account is not active.");
-            }
-
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
-            if (!isPasswordValid)
-            {
-                return Error.Unauthorized(description: "Invalid email or password.");
-            }
-
-            return user;
+            await _userManager.UpdateAsync(user);
         }
-        catch (Exception ex)
+
+        public async Task<List<User>> GetAllAsync()
         {
-            return Error.Failure(description: $"An error occurred while validating the user: {ex.Message}");
+            return await _userManager.Users.ToListAsync();
         }
     }
 }

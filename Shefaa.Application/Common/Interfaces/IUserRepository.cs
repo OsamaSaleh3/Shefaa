@@ -1,14 +1,14 @@
-﻿using ErrorOr;
-using Shefaa.Domain.Users;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Shefaa.Domain.Users;
 
-namespace Shefaa.Application.Common.Interfaces
+namespace Shefaa.Application.Common.Interfaces;
+
+public interface IUserRepository
 {
-    public interface IUserRepository
-    {
-        Task<ErrorOr<User>> CreateUserAsync(string firstName, string lastName,string email, string password, UserRole role,string? Specialization,string? PhoneNumber);
-        Task<ErrorOr<User>> ValidateUserAsync(string email, string password);
-    }
+    Task<User?> GetByEmailAsync(string email);
+    Task<User?> GetByIdAsync(string id);
+    Task<bool> CheckPasswordAsync(User user, string password);
+    Task<bool> CreateAsync(User user, string password);
+    Task DeleteAsync(User user);
+    Task UpdateAsync(User user);
+    Task<List<User>> GetAllAsync();
 }
