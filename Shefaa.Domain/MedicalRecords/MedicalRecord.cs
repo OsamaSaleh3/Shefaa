@@ -37,13 +37,13 @@ public partial class MedicalRecord: BaseEntity
 
     public string? DoctorNotes { get; private set; }
 
-    public virtual Appointment? Appointment { get; private set; }
+    public Appointment? Appointment { get; private set; }
 
-    public virtual User Doctor { get; private set; } = null!;
+    public User Doctor { get; private set; } = null!;
 
-    public virtual Patient Patient { get; private set; } = null!;
+    public Patient Patient { get; private set; } = null!;
 
-    public virtual List<Prescription> Prescriptions { get; private set; } = new List<Prescription>();
+    public List<Prescription> Prescriptions { get; private set; } = new List<Prescription>();
 
     internal MedicalRecord()
     {

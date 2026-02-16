@@ -22,9 +22,9 @@ public partial class User : IdentityUser
     public bool IsDeleted { get; set; } = false;
 
 
-    public virtual List<Appointment> Appointments { get; set; } = new();
+    public List<Appointment> Appointments { get; set; } = new();
 
-    public virtual List<MedicalRecord> MedicalRecords { get; set; } = new();
+    public List<MedicalRecord> MedicalRecords { get; set; } = new();
 
-    public virtual List<Prescription> Prescriptions { get; set; } = new();
+    public List<Prescription> Prescriptions { get; set; } = new();
 }

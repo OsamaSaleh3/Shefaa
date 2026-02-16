@@ -29,9 +29,9 @@ public partial class Invoice: BaseEntity
 
     public string? Notes { get; private set; }
 
-    public virtual List<InvoiceItem> InvoiceItems { get; private set; } = new List<InvoiceItem>();
+    public List<InvoiceItem> InvoiceItems { get; private set; } = new List<InvoiceItem>();
 
-    public virtual Patient Patient { get; private set; } = null!;
+    public Patient Patient { get; private set; } = null!;
 
     internal Invoice()
     {

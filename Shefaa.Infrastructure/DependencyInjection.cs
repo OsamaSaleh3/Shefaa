@@ -33,6 +33,8 @@ namespace Shefaa.Infrastructure
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.AddScoped<IPatientRepository, PatientRepository>();
+            services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
             return services;
         }

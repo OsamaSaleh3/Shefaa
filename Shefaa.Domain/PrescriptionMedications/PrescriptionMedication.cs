@@ -19,7 +19,7 @@ public partial class PrescriptionMedication: BaseEntity
 
     public string? Instructions { get; private set; }
 
-    public virtual Prescription Prescription { get; private set; } = null!;
+    public Prescription Prescription { get; private set; } = null!;
 
     private PrescriptionMedication(string medicationName, string dosage, string frequency, string duration,string? instructions = null)
     {

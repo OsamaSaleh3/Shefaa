@@ -3,8 +3,6 @@ using Shefaa.Domain.Appointments.enums;
 using Shefaa.Domain.MedicalRecords;
 using Shefaa.Domain.Patients;
 using Shefaa.Domain.Users;
-using System;
-using System.Collections.Generic;
 
 namespace Shefaa.Domain.Appointments;
 
@@ -17,37 +15,40 @@ public partial class Appointment:BaseEntity
 
     public DateTime AppointmentDate { get; private set; }
 
-    public int? DurationMinutes { get; private set; }
+    public int DurationMinutes { get; private set; }
 
-    public AppointmentStatus? Status { get; private set; }
+    public AppointmentStatus Status { get; private set; }
 
     public string? Notes { get; private set; }
 
-    public virtual User Doctor { get; private set; } = null!;
+    public User Doctor { get; private set; } = null!;
 
-    public virtual List<MedicalRecord> MedicalRecords { get; private set; } = new List<MedicalRecord>();
+    public List<MedicalRecord> MedicalRecords { get; private set; } = new List<MedicalRecord>();
 
-    public virtual Patient Patient { get; private set; } = null!;
+    public Patient Patient { get; private set; } = null!;
+
+   
 
     internal Appointment()
     {
     }
 
-    private Appointment(Guid patientId, string doctorId, DateTime appointmentDate, int? durationMinutes = null)
+    private Appointment(Guid patientId, string doctorId, DateTime appointmentDate, int durationMinutes,string? notes=null)
     {
         PatientId = patientId;
         DoctorId = doctorId;
         AppointmentDate = appointmentDate;
         DurationMinutes = durationMinutes;
         Status = AppointmentStatus.Scheduled;
+        Notes = notes;
     }
 
-    public static ErrorOr<Appointment> Create(Guid patientId, string doctorId, DateTime appointmentDate, int? durationMinutes = null)
+    public static ErrorOr<Appointment> Create(Guid patientId, string doctorId, DateTime appointmentDate, int durationMinutes,string? notes=null)
     {
         if (appointmentDate < DateTime.Now)
             return AppointmentErrors.InvalidRescheduleDate;
 
-        return new Appointment(patientId, doctorId, appointmentDate, durationMinutes);
+        return new Appointment(patientId, doctorId, appointmentDate, durationMinutes,notes);
     }
 
     public ErrorOr<Success> Complete()
@@ -88,6 +89,4 @@ public partial class Appointment:BaseEntity
         MarkAsUpdated();
         return Result.Success;
     }
-
-
 }

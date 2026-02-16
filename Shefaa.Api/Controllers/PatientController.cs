@@ -50,13 +50,10 @@ public class PatientsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] UpdatePatientRequest request)
     {
-        if (id != request.Id)
-        {
-            return BadRequest("ID mismatch");
-        }
+      
 
         var command = new UpdatePatientCommand(
-            request.Id,
+            id,
             request.FirstName,
             request.LastName,
             request.DateOfBirth,

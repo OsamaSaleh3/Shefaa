@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shefaa.Infrastructure.Common.Persistence;
 
@@ -11,9 +12,11 @@ using Shefaa.Infrastructure.Common.Persistence;
 namespace Shefaa.Infrastructure.Migrations
 {
     [DbContext(typeof(ShefaaDbContext))]
-    partial class ShefaaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260216142330_EditSomeProb")]
+    partial class EditSomeProb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,7 +179,7 @@ namespace Shefaa.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("DurationMinutes")
+                    b.Property<int?>("DurationMinutes")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(30);

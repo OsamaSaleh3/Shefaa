@@ -19,13 +19,13 @@ public partial class Prescription: BaseEntity
 
     public string? Notes { get; private set; }
 
-    public virtual User Doctor { get; private set; } = null!;
+    public User Doctor { get; private set; } = null!;
 
-    public virtual MedicalRecord MedicalRecord { get; private set; } = null!;
+    public MedicalRecord MedicalRecord { get; private set; } = null!;
 
-    public virtual Patient Patient { get; private set; } = null!;
+    public Patient Patient { get; private set; } = null!;
 
-    public virtual List<PrescriptionMedication> PrescriptionMedications { get; private set; } = new List<PrescriptionMedication>();
+    public List<PrescriptionMedication> PrescriptionMedications { get; private set; } = new List<PrescriptionMedication>();
 
     internal Prescription()
     {

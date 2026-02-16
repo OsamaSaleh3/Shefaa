@@ -35,13 +35,13 @@ public partial class Patient: BaseEntity
 
     public string? GeneralNotes { get; private set; }
 
-    public virtual List<Appointment> Appointments { get; private set; } = new List<Appointment>();
+    public List<Appointment> Appointments { get; private set; } = new List<Appointment>();
 
-    public virtual List<Invoice> Invoices { get; private set; } = new List<Invoice>();
+    public List<Invoice> Invoices { get; private set; } = new List<Invoice>();
 
-    public virtual List<MedicalRecord> MedicalRecords { get; private set; } = new List<MedicalRecord>();
+    public List<MedicalRecord> MedicalRecords { get; private set; } = new List<MedicalRecord>();
 
-    public virtual List<Prescription> Prescriptions { get; private set; } = new List<Prescription>();
+    public List<Prescription> Prescriptions { get; private set; } = new List<Prescription>();
 
     internal Patient()
     {
