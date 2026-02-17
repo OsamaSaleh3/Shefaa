@@ -11,11 +11,11 @@ public partial class InvoiceItem: BaseEntity
 
     public string Description { get; private set; } = null!;
 
-    public int? Quantity { get; private set; }
+    public int Quantity { get; private set; }
 
     public decimal UnitPrice { get; private set; }
 
-    public decimal? TotalPrice { get; private set; }
+    public decimal TotalPrice { get; private set; }
 
     public Invoice Invoice { get; private set; } = null!;
 
@@ -32,12 +32,12 @@ public partial class InvoiceItem: BaseEntity
         CalculateTotal();
     }
 
-    public static ErrorOr<InvoiceItem> Create(Guid invoiceId, string description, int? quantity, decimal unitPrice)
+    internal static ErrorOr<InvoiceItem> Create(Guid invoiceId, string description, int? quantity, decimal unitPrice)
     {
         if (string.IsNullOrWhiteSpace(description))
             return InvoiceItemErrors.EmptyDescription;
 
-        if (unitPrice <= 0)
+        if (unitPrice < 0)
             return InvoiceItemErrors.InvalidUnitPrice;
 
         if (quantity.HasValue && quantity <= 0)
@@ -46,7 +46,7 @@ public partial class InvoiceItem: BaseEntity
         return new InvoiceItem(invoiceId, description, quantity, unitPrice);
     }
 
-    public ErrorOr<Success> UpdateQuantity(int newQuantity)
+    internal ErrorOr<Success> UpdateQuantity(int newQuantity)
     {
         if (newQuantity <= 0)
             return InvoiceItemErrors.InvalidQuantity;
@@ -57,7 +57,7 @@ public partial class InvoiceItem: BaseEntity
         return Result.Success;
     }
 
-    public ErrorOr<Success> UpdatePrice(decimal newPrice)
+    internal ErrorOr<Success> UpdatePrice(decimal newPrice)
     {
         if (newPrice <= 0)
             return InvoiceItemErrors.InvalidUnitPrice;
@@ -70,6 +70,6 @@ public partial class InvoiceItem: BaseEntity
 
     private void CalculateTotal()
     {
-        TotalPrice = (Quantity ?? 0) * UnitPrice;
+        TotalPrice = (Quantity) * UnitPrice;
     }
 }
