@@ -30,6 +30,8 @@ namespace Shefaa.Infrastructure.Configurations
                 .HasForeignKey(ii => ii.InvoiceId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_InvoiceItems_Invoices");
+            builder.Property(m => m.Id)
+          .ValueGeneratedNever();
         }
     }
 }
