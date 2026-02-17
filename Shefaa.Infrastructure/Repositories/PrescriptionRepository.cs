@@ -27,29 +27,22 @@ namespace Shefaa.Infrastructure.Repositories
 
         public async Task UpdateAsync(Prescription prescription)
         {
-            _dbContext.Prescriptions.Update(prescription);
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task<Prescription?> GetByIdAsync(Guid id)
         {
             return await _dbContext.Prescriptions
+                .Include(p=>p.Doctor)
+                .Include(p=>p.Patient)
+                .Include(p => p.MedicalRecord)
+                .Include(p => p.PrescriptionMedications)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
         }
 
         public async Task<Prescription?> GetByIdWithMedicationsAsync(Guid id)
         {
             return await _dbContext.Prescriptions
-                .Include(p => p.PrescriptionMedications)
-                .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
-        }
-
-        public async Task<Prescription?> GetByIdWithDetailsAsync(Guid id)
-        {
-            return await _dbContext.Prescriptions
-                .Include(p => p.Patient)
-                .Include(p => p.Doctor)
-                .Include(p => p.MedicalRecord)
                 .Include(p => p.PrescriptionMedications)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
         }

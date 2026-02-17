@@ -6,5 +6,6 @@ public record PrescriptionResponse(
     string DoctorName,
     string PatientName,
     DateTime Date,
-    string? Notes
+    string? Notes,
+    List<PrescriptionMedicationResponse> Medications
 );

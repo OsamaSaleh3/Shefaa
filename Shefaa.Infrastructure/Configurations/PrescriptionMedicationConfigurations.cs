@@ -21,6 +21,9 @@ namespace Shefaa.Infrastructure.Configurations
             builder.HasOne(d => d.Prescription).WithMany(p => p.PrescriptionMedications)
                 .HasForeignKey(d => d.PrescriptionId)
                 .HasConstraintName("FK_Medications_Prescriptions");
+
+            builder.Property(m => m.Id)
+           .ValueGeneratedNever();
         }
     }
 }

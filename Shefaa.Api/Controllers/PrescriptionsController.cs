@@ -2,19 +2,19 @@ using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shefaa.Application.Prescriptions.Commands.CreatePrescription;
 using Shefaa.Application.Prescriptions.Commands.AddMedicationToPrescription;
+using Shefaa.Application.Prescriptions.Commands.CreatePrescription;
 using Shefaa.Application.Prescriptions.Commands.RemoveMedicationFromPrescription;
 using Shefaa.Application.Prescriptions.Commands.UpdatePrescriptionMedication;
 using Shefaa.Application.Prescriptions.Commands.UpdatePrescriptionNotes;
+using Shefaa.Application.Prescriptions.Dtos;
+using Shefaa.Application.Prescriptions.Queries.GetPatientPrescriptionsHistory;
 using Shefaa.Application.Prescriptions.Queries.GetPrescriptionById;
 using Shefaa.Application.Prescriptions.Queries.GetPrescriptionsByMedicalRecord;
-using Shefaa.Application.Prescriptions.Queries.GetPatientPrescriptionsHistory;
 using Shefaa.Contracts.Prescriptions;
 
 namespace Shefaa.Api.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class PrescriptionsController : ControllerBase
@@ -48,7 +48,7 @@ public class PrescriptionsController : ControllerBase
     public async Task<IActionResult> AddMedicationToPrescription(Guid id, [FromBody] AddMedicationToPrescriptionRequest request)
     {
         var command = new AddMedicationToPrescriptionCommand(
-            request.PrescriptionId,
+            id,
             request.MedicationName,
             request.Dosage,
             request.Frequency,
@@ -68,7 +68,7 @@ public class PrescriptionsController : ControllerBase
     public async Task<IActionResult> RemoveMedicationFromPrescription(Guid id, [FromBody] RemoveMedicationFromPrescriptionRequest request)
     {
         var command = new RemoveMedicationFromPrescriptionCommand(
-            request.PrescriptionId,
+            id,
             request.MedicationName
         );
 
@@ -84,7 +84,7 @@ public class PrescriptionsController : ControllerBase
     public async Task<IActionResult> UpdatePrescriptionMedication(Guid id, [FromBody] UpdatePrescriptionMedicationRequest request)
     {
         var command = new UpdatePrescriptionMedicationCommand(
-            request.PrescriptionId,
+            id,
             request.MedicationName,
             request.NewDosage,
             request.NewFrequency,
@@ -104,7 +104,7 @@ public class PrescriptionsController : ControllerBase
     public async Task<IActionResult> UpdatePrescriptionNotes(Guid id, [FromBody] UpdatePrescriptionNotesRequest request)
     {
         var command = new UpdatePrescriptionNotesCommand(
-            request.PrescriptionId,
+            id,
             request.NewNotes
         );
 
@@ -131,7 +131,16 @@ public class PrescriptionsController : ControllerBase
                     prescriptionDto.DoctorName,
                     prescriptionDto.PatientName,
                     prescriptionDto.Date,
-                    prescriptionDto.Notes
+                    prescriptionDto.Notes,
+                    new List<PrescriptionMedicationResponse>(
+                        prescriptionDto.Medications.Select(pm => new PrescriptionMedicationResponse(
+                            pm.Name,
+                            pm.Dosage,
+                            pm.Frequency,
+                            pm.Duration,
+                            pm.Instructions
+                            ))
+                        )
                 )),
             errors => Problem(statusCode: GetStatusCode(errors), detail: errors.First().Description)
         );
@@ -150,7 +159,16 @@ public class PrescriptionsController : ControllerBase
                 p.DoctorName,
                 p.PatientName,
                 p.Date,
-                p.Notes
+                p.Notes,
+                new List<PrescriptionMedicationResponse>(
+                        p.Medications.Select(pm => new PrescriptionMedicationResponse(
+                            pm.Name,
+                            pm.Dosage,
+                            pm.Frequency,
+                            pm.Duration,
+                            pm.Instructions
+                            ))
+                        )
             )).ToList()),
             errors => Problem(statusCode: GetStatusCode(errors), detail: errors.First().Description)
         );
@@ -169,7 +187,16 @@ public class PrescriptionsController : ControllerBase
                 p.DoctorName,
                 p.PatientName,
                 p.Date,
-                p.Notes
+                p.Notes,
+                new List<PrescriptionMedicationResponse>(
+                        p.Medications.Select(pm => new PrescriptionMedicationResponse(
+                            pm.Name,
+                            pm.Dosage,
+                            pm.Frequency,
+                            pm.Duration,
+                            pm.Instructions
+                            ))
+                        )
             )).ToList()),
             errors => Problem(statusCode: GetStatusCode(errors), detail: errors.First().Description)
         );
