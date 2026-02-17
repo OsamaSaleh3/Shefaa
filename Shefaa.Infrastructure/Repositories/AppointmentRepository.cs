@@ -3,10 +3,6 @@ using Shefaa.Application.Common.Interfaces;
 using Shefaa.Domain.Appointments;
 using Shefaa.Domain.Appointments.enums;
 using Shefaa.Infrastructure.Common.Persistence;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Shefaa.Infrastructure.Repositories
 {

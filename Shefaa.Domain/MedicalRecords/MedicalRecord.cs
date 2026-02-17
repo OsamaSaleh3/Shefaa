@@ -15,7 +15,7 @@ public partial class MedicalRecord: BaseEntity
 
     public Guid? AppointmentId { get; private set; }
 
-    public DateTime? VisitDate { get; private set; }
+    public DateTime VisitDate { get; private set; }
 
     public string ChiefComplaint { get; private set; } = null!;
 

@@ -22,23 +22,19 @@ public class DeletePatientCommandHandler : IRequestHandler<DeletePatientCommand,
                 description: "Patient ID is required");
         }
 
-        try
-        {
-            var patient = await _patientRepository.GetByIdAsync(request.Id);
-            if (patient is null)
-            {
-                return Error.NotFound(code: "Patient.NotFound", description: $"Patient with ID {request.Id} not found");
-            }
 
-            patient.SoftDelete();
-            await _patientRepository.UpdateAsync(patient);
-
-            return Result.Success;
-        }
-        catch (Exception ex)
+        var patient = await _patientRepository.GetByIdAsync(request.Id);
+        if (patient is null)
         {
-            return Error.Failure(description: $"An error occurred while deleting the patient: {ex.Message}");
+            return Error.NotFound(code: "Patient.NotFound", description: $"Patient with ID {request.Id} not found");
         }
+
+        patient.SoftDelete();
+        await _patientRepository.UpdateAsync(patient);
+
+        return Result.Success;
     }
+       
+    
 }
 

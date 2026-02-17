@@ -30,11 +30,12 @@ namespace Shefaa.Infrastructure
                 .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddUserManager<UserManager<User>>();
 
-            services.AddScoped<IUserRepository, UserRepository>();
 
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
 
             return services;
         }
