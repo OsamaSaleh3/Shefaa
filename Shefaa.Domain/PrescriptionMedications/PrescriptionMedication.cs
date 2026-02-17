@@ -1,11 +1,9 @@
 ﻿using ErrorOr;
 using Shefaa.Domain.Prescriptions;
-using System;
-using System.Collections.Generic;
 
 namespace Shefaa.Domain.PrescriptionMedications;
 
-public partial class PrescriptionMedication: BaseEntity
+public partial class PrescriptionMedication : BaseEntity
 {
     public Guid PrescriptionId { get; private set; }
 
@@ -21,7 +19,9 @@ public partial class PrescriptionMedication: BaseEntity
 
     public Prescription Prescription { get; private set; } = null!;
 
-    private PrescriptionMedication(string medicationName, string dosage, string frequency, string duration,string? instructions = null)
+    internal PrescriptionMedication() { }
+
+    private PrescriptionMedication(string medicationName, string dosage, string frequency, string duration, string? instructions = null)
     {
         MedicationName = medicationName;
         Dosage = dosage;
@@ -30,41 +30,34 @@ public partial class PrescriptionMedication: BaseEntity
         Instructions = instructions;
     }
 
-    public static ErrorOr<PrescriptionMedication>Create(string medicationName, string dosage, string frequency, string duration, string? instructions = null)
+    internal static ErrorOr<PrescriptionMedication> Create(string medicationName, string dosage, string frequency, string duration, string? instructions = null)
     {
         if (string.IsNullOrWhiteSpace(medicationName))
-        {
             return PrescriptionMedicationErrors.EmptyMedicationName;
-        }
 
         if (string.IsNullOrWhiteSpace(dosage))
-        {
             return PrescriptionMedicationErrors.InvalidDosage;
-        }
 
         if (string.IsNullOrWhiteSpace(frequency))
-        {
             return PrescriptionMedicationErrors.InvalidFrequency;
-        }
 
         if (string.IsNullOrWhiteSpace(duration))
-        {
             return PrescriptionMedicationErrors.InvalidDuration;
-        }
 
         return new PrescriptionMedication(medicationName, dosage, frequency, duration, instructions);
     }
 
-    public ErrorOr<Success> UpdateDosage(string newDosage, string? reason)
+    internal ErrorOr<Success> UpdateDetails(string dosage, string frequency, string duration, string? instructions)
     {
-        if (string.IsNullOrWhiteSpace(newDosage))
-        {
-            return PrescriptionMedicationErrors.InvalidDosage;
-        }
+        if (string.IsNullOrWhiteSpace(dosage)) return PrescriptionMedicationErrors.InvalidDosage;
+        if (string.IsNullOrWhiteSpace(frequency)) return PrescriptionMedicationErrors.InvalidFrequency;
+        if (string.IsNullOrWhiteSpace(duration)) return PrescriptionMedicationErrors.InvalidDuration;
 
-        Dosage = newDosage;
-        Instructions += $" [the Dosage updated for these reason : {reason}]";
-        MarkAsUpdated();
+        Dosage = dosage;
+        Frequency = frequency;
+        Duration = duration;
+        Instructions = instructions;
+        
         return Result.Success;
     }
 }

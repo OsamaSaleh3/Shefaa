@@ -14,5 +14,11 @@ namespace Shefaa.Domain.Prescriptions
         public static readonly Error EmptyMedicationList = Error.Validation(
             code: "Prescription.EmptyMedicationList",
             description: "A prescription must contain at least one medication before it can be finalized.");
+
+        public static readonly Error NotFoundMedication = Error.NotFound(
+            code: "Prescription.MedicationNotFound",
+            description: "Medication not found in the Prescription.");
+
+
     }
 }

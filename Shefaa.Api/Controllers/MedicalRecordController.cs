@@ -52,13 +52,10 @@ public class MedicalRecordsController : ControllerBase
     [HttpPut("{id}/vitals")]
     public async Task<IActionResult> UpdateMedicalRecordVitals(Guid id, [FromBody] UpdateMedicalRecordVitalsRequest request)
     {
-        if (id != request.Id)
-        {
-            return BadRequest("ID mismatch");
-        }
+       
 
         var command = new UpdateMedicalRecordVitalsCommand(
-            request.Id,
+            id,
             request.BloodPressure,
             request.Temperature,
             request.Pulse,
@@ -78,13 +75,10 @@ public class MedicalRecordsController : ControllerBase
     [HttpPut("{id}/diagnosis")]
     public async Task<IActionResult> UpdateDiagnosis(Guid id, [FromBody] UpdateDiagnosisRequest request)
     {
-        if (id != request.Id)
-        {
-            return BadRequest("ID mismatch");
-        }
+       
 
         var command = new UpdateDiagnosisCommand(
-            request.Id,
+            id,
             request.NewDiagnosis,
             request.AdditionalNotes
         );
